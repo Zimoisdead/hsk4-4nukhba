@@ -1,0 +1,2474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HSK 4 — 句子排序 Sentence Rearrangement Drill</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=DM+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* ===== DESIGN SYSTEM ===== */
+:root {
+  --ink: #0d0f14;
+  --ink-soft: #1e2130;
+  --ink-muted: #2e3350;
+  --surface: #f5f3ee;
+  --surface-dim: #ede9e0;
+  --surface-card: #faf9f6;
+  --gold: #c8922a;
+  --gold-light: #e8b84b;
+  --gold-pale: #f5e6c8;
+  --red: #b83232;
+  --red-pale: #fae8e8;
+  --green: #1e7a4a;
+  --green-pale: #e4f4ec;
+  --blue: #1d4e89;
+  --blue-pale: #e4edf8;
+  --border: rgba(13,15,20,0.12);
+  --border-strong: rgba(13,15,20,0.25);
+  --shadow-sm: 0 1px 4px rgba(13,15,20,0.08), 0 0 0 1px rgba(13,15,20,0.04);
+  --shadow-md: 0 4px 16px rgba(13,15,20,0.12), 0 1px 4px rgba(13,15,20,0.08);
+  --shadow-lg: 0 12px 40px rgba(13,15,20,0.16), 0 4px 12px rgba(13,15,20,0.1);
+  --radius: 6px;
+  --radius-lg: 12px;
+  --transition: 160ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 16px; scroll-behavior: smooth; }
+
+body {
+  font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: var(--surface);
+  color: var(--ink);
+  min-height: 100vh;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ===== BACKGROUND TEXTURE ===== */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(200,146,42,0.06) 0%, transparent 60%),
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%230d0f14' fill-opacity='0.018'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ===== LAYOUT ===== */
+#app { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
+
+/* ===== HEADER ===== */
+.exam-header {
+  background: var(--ink);
+  color: var(--surface);
+  padding: 0 2rem;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 2px solid var(--gold);
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-logo {
+  width: 36px; height: 36px;
+  background: var(--gold);
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Noto Serif SC', serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--ink);
+  letter-spacing: -0.5px;
+  flex-shrink: 0;
+}
+
+.header-title {
+  font-family: 'Playfair Display', 'Noto Serif SC', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--surface);
+}
+
+.header-sub {
+  font-size: 0.7rem;
+  color: rgba(245,243,238,0.5);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 1px;
+  font-weight: 300;
+}
+
+.header-center {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.progress-bar-wrap {
+  width: 180px;
+  height: 4px;
+  background: rgba(245,243,238,0.15);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+.progress-label {
+  font-size: 0.75rem;
+  color: rgba(245,243,238,0.6);
+  font-family: 'DM Mono', monospace;
+  white-space: nowrap;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.timer-display {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.9rem;
+  color: var(--gold-light);
+  letter-spacing: 0.05em;
+  background: rgba(200,146,42,0.12);
+  padding: 4px 12px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(200,146,42,0.25);
+}
+
+.stat-pill {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.75rem;
+  color: rgba(245,243,238,0.6);
+}
+
+.stat-pill strong { color: var(--surface); font-size: 0.85rem; }
+
+.mode-toggle-btn {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: rgba(245,243,238,0.08);
+  color: rgba(245,243,238,0.7);
+  border: 1px solid rgba(245,243,238,0.15);
+  padding: 4px 10px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: 'DM Mono', monospace;
+}
+.mode-toggle-btn:hover { background: rgba(245,243,238,0.14); color: var(--surface); }
+
+/* ===== SCREENS ===== */
+.screen { display: none; flex: 1; }
+.screen.active { display: flex; }
+
+/* ===== WELCOME SCREEN ===== */
+#screen-welcome {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  min-height: calc(100vh - 56px);
+}
+
+.welcome-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 3rem 3.5rem;
+  max-width: 680px;
+  width: 100%;
+  text-align: center;
+}
+
+.welcome-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--gold-pale);
+  color: var(--gold);
+  border: 1px solid rgba(200,146,42,0.3);
+  border-radius: 100px;
+  padding: 4px 16px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+.welcome-title {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 0.75rem;
+  color: var(--ink);
+}
+
+.welcome-title span { color: var(--gold); }
+
+.welcome-subtitle {
+  font-size: 1rem;
+  color: var(--ink-muted);
+  margin-bottom: 2.5rem;
+  line-height: 1.7;
+}
+
+.welcome-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 1.5rem 0;
+}
+
+.wstat { text-align: center; }
+.wstat-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 2rem;
+  font-weight: 500;
+  color: var(--gold);
+  display: block;
+}
+.wstat-label { font-size: 0.75rem; color: var(--ink-muted); margin-top: 2px; letter-spacing: 0.04em; }
+
+.grammar-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin-bottom: 2.5rem;
+}
+
+.grammar-tag {
+  background: var(--surface-dim);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 3px 12px;
+  font-size: 0.73rem;
+  color: var(--ink-muted);
+  font-family: 'DM Mono', monospace;
+}
+
+.btn-primary {
+  background: var(--ink);
+  color: var(--surface);
+  border: none;
+  padding: 14px 40px;
+  border-radius: var(--radius);
+  font-size: 0.95rem;
+  font-weight: 500;
+  font-family: 'Noto Sans SC', sans-serif;
+  cursor: pointer;
+  transition: var(--transition);
+  letter-spacing: 0.02em;
+  box-shadow: var(--shadow-md);
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-primary:hover { background: var(--ink-soft); transform: translateY(-1px); box-shadow: var(--shadow-lg); }
+.btn-primary:active { transform: translateY(0); }
+
+.btn-secondary {
+  background: transparent;
+  color: var(--ink-muted);
+  border: 1px solid var(--border-strong);
+  padding: 12px 28px;
+  border-radius: var(--radius);
+  font-size: 0.88rem;
+  font-family: 'Noto Sans SC', sans-serif;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.btn-secondary:hover { background: var(--surface-dim); color: var(--ink); }
+
+.welcome-actions { display: flex; gap: 12px; justify-content: center; align-items: center; }
+
+/* ===== EXAM SCREEN ===== */
+#screen-exam {
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  min-height: calc(100vh - 56px);
+}
+
+.exam-container {
+  width: 100%;
+  max-width: 860px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Question meta */
+.question-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.q-number {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+  letter-spacing: 0.06em;
+}
+
+.difficulty-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-weight: 500;
+}
+.diff-easy { background: var(--green-pale); color: var(--green); border: 1px solid rgba(30,122,74,0.2); }
+.diff-medium { background: var(--gold-pale); color: var(--gold); border: 1px solid rgba(200,146,42,0.25); }
+.diff-hard { background: var(--red-pale); color: var(--red); border: 1px solid rgba(184,50,50,0.2); }
+
+.grammar-focus {
+  font-size: 0.72rem;
+  color: var(--blue);
+  background: var(--blue-pale);
+  border: 1px solid rgba(29,78,137,0.2);
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-family: 'DM Mono', monospace;
+}
+
+/* Question card */
+.question-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+.question-card-header {
+  background: var(--ink);
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.question-card-header span {
+  font-size: 0.75rem;
+  color: rgba(245,243,238,0.5);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.question-instruction {
+  font-size: 0.88rem;
+  color: rgba(245,243,238,0.85);
+  font-style: italic;
+  margin-left: auto;
+}
+
+.question-body { padding: 1.75rem 1.5rem; }
+
+/* Answer area - where user drops words */
+.answer-zone {
+  min-height: 68px;
+  border: 2px dashed var(--border-strong);
+  border-radius: var(--radius);
+  padding: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  background: var(--surface);
+  transition: var(--transition);
+  margin-bottom: 1.25rem;
+  position: relative;
+}
+
+.answer-zone.drag-over {
+  border-color: var(--gold);
+  background: var(--gold-pale);
+}
+
+.answer-zone-placeholder {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.82rem;
+  color: rgba(13,15,20,0.25);
+  pointer-events: none;
+  white-space: nowrap;
+  letter-spacing: 0.04em;
+}
+
+/* Word chips */
+.word-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  background: var(--surface-card);
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius);
+  font-family: 'Noto Serif SC', serif;
+  font-size: 1.05rem;
+  font-weight: 400;
+  color: var(--ink);
+  cursor: pointer;
+  user-select: none;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+
+.word-chip:hover {
+  border-color: var(--gold);
+  box-shadow: 0 2px 8px rgba(200,146,42,0.15), var(--shadow-sm);
+  transform: translateY(-1px);
+  background: var(--gold-pale);
+}
+
+.word-chip:active { transform: translateY(0); }
+
+.word-chip.dragging {
+  opacity: 0.45;
+  box-shadow: none;
+}
+
+.word-chip.in-answer {
+  background: var(--ink);
+  color: var(--surface);
+  border-color: var(--ink);
+}
+
+.word-chip.in-answer:hover {
+  background: var(--ink-soft);
+  border-color: var(--ink-soft);
+  box-shadow: var(--shadow-md);
+}
+
+.chip-index {
+  position: absolute;
+  top: -6px; right: -6px;
+  width: 16px; height: 16px;
+  background: var(--gold);
+  color: var(--ink);
+  border-radius: 50%;
+  font-size: 9px;
+  font-family: 'DM Mono', monospace;
+  font-weight: 500;
+  display: flex; align-items: center; justify-content: center;
+  display: none;
+}
+
+.in-answer .chip-index { display: flex; }
+
+/* Word bank */
+.word-bank-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-muted);
+  margin-bottom: 0.75rem;
+  font-family: 'DM Mono', monospace;
+}
+
+.word-bank {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 52px;
+}
+
+/* Action buttons */
+.question-actions {
+  display: flex;
+  gap: 10px;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  align-items: center;
+}
+
+.btn-submit {
+  background: var(--gold);
+  color: var(--ink);
+  border: none;
+  padding: 10px 28px;
+  border-radius: var(--radius);
+  font-size: 0.88rem;
+  font-weight: 700;
+  font-family: 'Noto Sans SC', sans-serif;
+  cursor: pointer;
+  transition: var(--transition);
+  letter-spacing: 0.02em;
+}
+.btn-submit:hover { background: var(--gold-light); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.btn-submit:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+.btn-clear {
+  background: transparent;
+  color: var(--ink-muted);
+  border: 1px solid var(--border-strong);
+  padding: 9px 18px;
+  border-radius: var(--radius);
+  font-size: 0.82rem;
+  font-family: 'Noto Sans SC', sans-serif;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.btn-clear:hover { background: var(--surface-dim); color: var(--ink); }
+
+.btn-next {
+  background: var(--ink);
+  color: var(--surface);
+  border: none;
+  padding: 10px 28px;
+  border-radius: var(--radius);
+  font-size: 0.88rem;
+  font-weight: 500;
+  font-family: 'Noto Sans SC', sans-serif;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-left: auto;
+  display: none;
+}
+.btn-next:hover { background: var(--ink-soft); transform: translateY(-1px); }
+.btn-next.visible { display: block; }
+
+.btn-skip {
+  margin-left: auto;
+  background: transparent;
+  color: var(--ink-muted);
+  border: none;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: 'Noto Sans SC', sans-serif;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.btn-skip:hover { color: var(--ink); }
+
+/* ===== FEEDBACK PANEL ===== */
+.feedback-panel {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  display: none;
+  animation: slideUp 0.3s ease;
+}
+
+.feedback-panel.visible { display: block; }
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.feedback-header {
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.feedback-correct .feedback-header { background: var(--green); }
+.feedback-wrong .feedback-header { background: var(--red); }
+
+.feedback-icon {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.feedback-header-text { color: white; }
+.feedback-header-text strong { display: block; font-size: 0.95rem; font-weight: 700; }
+.feedback-header-text span { font-size: 0.78rem; opacity: 0.85; }
+
+.feedback-body {
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-top: none;
+  padding: 1.5rem;
+}
+
+.correct-sentence {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 1.15rem;
+  color: var(--ink);
+  background: var(--surface-dim);
+  border-left: 3px solid var(--gold);
+  padding: 0.75rem 1rem;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  margin-bottom: 1.25rem;
+  line-height: 1.7;
+}
+
+.user-sentence {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 1rem;
+  color: var(--red);
+  background: var(--red-pale);
+  border-left: 3px solid var(--red);
+  padding: 0.75rem 1rem;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  margin-bottom: 1.25rem;
+  line-height: 1.7;
+}
+
+.explanation-block { margin-bottom: 1rem; }
+
+.explanation-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-family: 'DM Mono', monospace;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.explanation-text {
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  line-height: 1.75;
+}
+
+.explanation-text strong { color: var(--ink); }
+
+.grammar-pattern {
+  background: var(--blue-pale);
+  border: 1px solid rgba(29,78,137,0.2);
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--blue);
+  font-family: 'DM Mono', monospace;
+  line-height: 1.6;
+}
+
+.pitfall-block {
+  background: var(--red-pale);
+  border: 1px solid rgba(184,50,50,0.15);
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+  margin-top: 0.75rem;
+  font-size: 0.83rem;
+  color: var(--red);
+  line-height: 1.6;
+}
+
+.pitfall-block strong { color: var(--red); }
+
+.mnemonic-block {
+  background: var(--gold-pale);
+  border: 1px solid rgba(200,146,42,0.25);
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+  margin-top: 0.75rem;
+  font-size: 0.83rem;
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+
+/* ===== QUESTION NAV ===== */
+.question-nav {
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.25rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.nav-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  font-family: 'DM Mono', monospace;
+  margin-bottom: 0.75rem;
+}
+
+.nav-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.nav-dot {
+  width: 28px; height: 28px;
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem;
+  font-family: 'DM Mono', monospace;
+  cursor: pointer;
+  transition: var(--transition);
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--ink-muted);
+}
+
+.nav-dot:hover { border-color: var(--gold); color: var(--gold); }
+.nav-dot.current { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.nav-dot.correct { background: var(--green); color: white; border-color: var(--green); }
+.nav-dot.wrong { background: var(--red); color: white; border-color: var(--red); }
+.nav-dot.skipped { background: var(--surface-dim); border-style: dashed; }
+
+/* ===== REVIEW MODE ===== */
+#screen-review {
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  min-height: calc(100vh - 56px);
+}
+
+.review-container {
+  width: 100%; max-width: 800px;
+}
+
+.review-header-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  display: flex; align-items: center; gap: 1rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.review-item {
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 1rem;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.review-item-header {
+  padding: 0.9rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+}
+
+.review-item.answered-correct .review-item-header { border-left: 4px solid var(--green); }
+.review-item.answered-wrong .review-item-header { border-left: 4px solid var(--red); }
+.review-item.unanswered .review-item-header { border-left: 4px solid var(--border-strong); }
+
+.review-item-body { display: none; padding: 1rem 1.25rem; border-top: 1px solid var(--border); background: var(--surface); }
+.review-item.expanded .review-item-body { display: block; }
+
+.review-sentence {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 1rem;
+  color: var(--ink);
+  flex: 1;
+}
+
+/* ===== RESULTS SCREEN ===== */
+#screen-results {
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  min-height: calc(100vh - 56px);
+}
+
+.results-container { width: 100%; max-width: 760px; }
+
+.results-hero {
+  background: var(--ink);
+  color: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 3rem 2.5rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+
+.results-hero::before {
+  content: '';
+  position: absolute;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(200,146,42,0.15) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.results-grade {
+  font-family: 'DM Mono', monospace;
+  font-size: 5rem;
+  font-weight: 500;
+  color: var(--gold-light);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.results-label {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-style: italic;
+  opacity: 0.85;
+  margin-bottom: 2rem;
+}
+
+.results-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: rgba(245,243,238,0.1);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.rstat {
+  background: rgba(245,243,238,0.05);
+  padding: 1rem 0.5rem;
+  text-align: center;
+}
+
+.rstat-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 1.5rem;
+  color: var(--gold-light);
+  display: block;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.rstat-label {
+  font-size: 0.68rem;
+  color: rgba(245,243,238,0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.results-breakdown {
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.breakdown-title {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-muted);
+  font-family: 'DM Mono', monospace;
+  margin-bottom: 1rem;
+}
+
+.grammar-breakdown-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.grammar-breakdown-item:last-child { border-bottom: none; }
+
+.gb-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--blue);
+  background: var(--blue-pale);
+  border-radius: 100px;
+  padding: 2px 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.gb-bar-wrap { flex: 1; height: 6px; background: var(--surface-dim); border-radius: 3px; overflow: hidden; }
+.gb-bar { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+.gb-bar.good { background: var(--green); }
+.gb-bar.ok { background: var(--gold); }
+.gb-bar.bad { background: var(--red); }
+
+.gb-score { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--ink-muted); white-space: nowrap; }
+
+.recommendations {
+  background: var(--gold-pale);
+  border: 1px solid rgba(200,146,42,0.25);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.rec-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 0.75rem;
+  font-family: 'Noto Serif SC', serif;
+}
+
+.rec-item {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+
+.rec-item::before {
+  content: '→';
+  color: var(--gold);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.results-actions { display: flex; gap: 12px; justify-content: center; }
+
+/* ===== UTILITY ===== */
+.hidden { display: none !important; }
+
+.divider {
+  width: 1px;
+  height: 20px;
+  background: rgba(245,243,238,0.15);
+}
+
+/* Shake animation for wrong answer */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+.shake { animation: shake 0.4s ease; }
+
+/* Celebration particles */
+.confetti-piece {
+  position: fixed;
+  width: 8px; height: 8px;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 9999;
+  animation: confettiFall linear forwards;
+}
+
+@keyframes confettiFall {
+  0% { opacity: 1; transform: translateY(0) rotate(0deg); }
+  100% { opacity: 0; transform: translateY(100vh) rotate(720deg); }
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  .exam-header { padding: 0 1rem; }
+  .header-center { display: none; }
+  .welcome-card { padding: 2rem 1.5rem; }
+  .welcome-stats { grid-template-columns: repeat(3, 1fr); }
+  .results-stats-grid { grid-template-columns: repeat(2, 1fr); }
+  #screen-exam, #screen-review, #screen-results { padding: 1rem; }
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ===== HEADER ===== -->
+  <header class="exam-header">
+    <div class="header-brand">
+      <div class="header-logo">汉语</div>
+      <div>
+        <div class="header-title">HSK 4 · 句子排序</div>
+        <div class="header-sub">Sentence Rearrangement Drill</div>
+      </div>
+    </div>
+    <div class="header-center" id="headerCenter" style="display:none">
+      <span class="progress-label" id="headerProgress">0 / 50</span>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="headerProgressBar" style="width:0%"></div>
+      </div>
+      <div class="divider"></div>
+      <div class="stat-pill">✓ <strong id="headerCorrect">0</strong></div>
+      <div class="stat-pill">✗ <strong id="headerWrong">0</strong></div>
+    </div>
+    <div class="header-right">
+      <div class="timer-display" id="timerDisplay">00:00</div>
+      <button class="mode-toggle-btn" id="reviewModeBtn" onclick="toggleReviewMode()" style="display:none">Review</button>
+      <button class="mode-toggle-btn" onclick="showWelcome()">← Home</button>
+    </div>
+  </header>
+
+  <!-- ===== SCREEN: WELCOME ===== -->
+  <div id="screen-welcome" class="screen active">
+    <div class="welcome-card">
+      <div class="welcome-badge">⚡ Official Exam Format</div>
+      <h1 class="welcome-title">HSK 4 句子排序<br><span>Sentence Rearrangement</span></h1>
+      <p class="welcome-subtitle">
+        50 exam-authentic questions covering all major HSK 4 grammar structures.<br>
+        Practice drag-and-rearrange with intelligent feedback after every question.
+      </p>
+      <div class="welcome-stats">
+        <div class="wstat"><span class="wstat-num">50</span><div class="wstat-label">Questions</div></div>
+        <div class="wstat"><span class="wstat-num">18</span><div class="wstat-label">Grammar Points</div></div>
+        <div class="wstat"><span class="wstat-num">~30</span><div class="wstat-label">Minutes</div></div>
+      </div>
+      <div class="grammar-tags">
+        <span class="grammar-tag">把字句</span><span class="grammar-tag">被字句</span>
+        <span class="grammar-tag">比较句</span><span class="grammar-tag">了/着/过</span>
+        <span class="grammar-tag">结果补语</span><span class="grammar-tag">趋向补语</span>
+        <span class="grammar-tag">程度补语</span><span class="grammar-tag">虽然…但是</span>
+        <span class="grammar-tag">不仅…而且</span><span class="grammar-tag">如果…就</span>
+        <span class="grammar-tag">因为…所以</span><span class="grammar-tag">连…都</span>
+        <span class="grammar-tag">是…的</span><span class="grammar-tag">越来越</span>
+        <span class="grammar-tag">连动句</span><span class="grammar-tag">兼语句</span>
+        <span class="grammar-tag">对…来说</span><span class="grammar-tag">除了…以外</span>
+      </div>
+      <div class="welcome-actions">
+        <button class="btn-primary" onclick="startExam()">开始练习 · Begin Drill →</button>
+        <button class="btn-secondary" onclick="startReview()">Review Mode</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SCREEN: EXAM ===== -->
+  <div id="screen-exam" class="screen">
+    <div class="exam-container">
+      <!-- Meta row -->
+      <div class="question-meta">
+        <span class="q-number" id="qNumber">Question 1 of 50</span>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <span class="grammar-focus" id="qGrammar">—</span>
+          <span class="difficulty-badge" id="qDifficulty">Medium</span>
+        </div>
+      </div>
+
+      <!-- Question card -->
+      <div class="question-card" id="questionCard">
+        <div class="question-card-header">
+          <span>第三部分 · Part III</span>
+          <span class="question-instruction">请将词语排列成句子 / Arrange the words into a correct sentence</span>
+        </div>
+        <div class="question-body">
+          <!-- Answer zone -->
+          <div class="answer-zone" id="answerZone"
+            ondragover="handleDragOver(event)"
+            ondrop="handleDrop(event, 'answer')"
+            ondragleave="handleDragLeave(event)">
+            <span class="answer-zone-placeholder" id="answerPlaceholder">← 点击或拖拽词语到此处 / Click or drag words here</span>
+          </div>
+
+          <!-- Word bank -->
+          <div class="word-bank-label">词语库 · Word Bank</div>
+          <div class="word-bank" id="wordBank"
+            ondragover="handleDragOver(event)"
+            ondrop="handleDrop(event, 'bank')"
+            ondragleave="handleDragLeave(event)">
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="question-actions">
+          <button class="btn-submit" id="btnSubmit" onclick="submitAnswer()">提交 · Submit</button>
+          <button class="btn-clear" onclick="clearAnswer()">清除 · Clear</button>
+          <button class="btn-skip" onclick="skipQuestion()">跳过 · Skip →</button>
+          <button class="btn-next visible" id="btnNext" onclick="nextQuestion()" style="display:none">下一题 · Next →</button>
+        </div>
+      </div>
+
+      <!-- Feedback panel -->
+      <div class="feedback-panel" id="feedbackPanel"></div>
+
+      <!-- Navigation -->
+      <div class="question-nav">
+        <div class="nav-label">题目导航 · Question Navigator</div>
+        <div class="nav-grid" id="navGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SCREEN: REVIEW ===== -->
+  <div id="screen-review" class="screen">
+    <div class="review-container">
+      <div class="review-header-card">
+        <div style="flex:1">
+          <div style="font-size:0.75rem;color:var(--ink-muted);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px">Review Mode · 复习模式</div>
+          <div style="font-size:1.1rem;font-weight:600;font-family:'Noto Serif SC',serif;">All 50 Questions with Answers</div>
+        </div>
+        <button class="btn-secondary" onclick="startExam()">Practice Mode →</button>
+      </div>
+      <div id="reviewList"></div>
+    </div>
+  </div>
+
+  <!-- ===== SCREEN: RESULTS ===== -->
+  <div id="screen-results" class="screen">
+    <div class="results-container">
+      <div class="results-hero">
+        <div class="results-grade" id="resultScore">—</div>
+        <div class="results-label" id="resultLabel">—</div>
+        <div class="results-stats-grid">
+          <div class="rstat"><span class="rstat-num" id="rCorrect">0</span><div class="rstat-label">Correct</div></div>
+          <div class="rstat"><span class="rstat-num" id="rWrong">0</span><div class="rstat-label">Wrong</div></div>
+          <div class="rstat"><span class="rstat-num" id="rSkipped">0</span><div class="rstat-label">Skipped</div></div>
+          <div class="rstat"><span class="rstat-num" id="rTime">—</span><div class="rstat-label">Total Time</div></div>
+        </div>
+      </div>
+
+      <div class="results-breakdown" id="grammarBreakdown">
+        <div class="breakdown-title">Grammar Point Performance · 语法点成绩</div>
+        <div id="grammarBreakdownList"></div>
+      </div>
+
+      <div class="recommendations" id="recommendations">
+        <div class="rec-title">🎯 Study Recommendations · 学习建议</div>
+        <div id="recommendationsList"></div>
+      </div>
+
+      <div class="results-actions">
+        <button class="btn-primary" onclick="restartExam()">再练一次 · Try Again</button>
+        <button class="btn-secondary" onclick="showWelcome()">← 返回首页</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ============================================================
+// DATA: 50 HSK 4 SENTENCE REARRANGEMENT QUESTIONS
+// ============================================================
+const QUESTIONS = [
+  // ─── 把字句 ───
+  {
+    id: 1,
+    words: ["他", "把", "作业", "忘", "在", "家", "里", "了"],
+    answer: [0,1,2,3,4,5,6,7],
+    sentence: "他把作业忘在家里了。",
+    grammar: "把字句",
+    difficulty: "easy",
+    explanation: "The 把 sentence moves the object before the verb to emphasize what happened to it. Structure: Subject + 把 + Object + Verb + Complement/Result.",
+    pattern: "主语 + 把 + 宾语 + 动词 + 结果/处所补语",
+    pitfall: "The verb after 把 MUST have a complement or result — never stand alone. ✗ 他把作业忘了 (incomplete result) → needs 在家里 to specify where.",
+    mnemonic: "把 'grabs' the object and 'throws' it before the verb. Think: he grabbed his homework and forgot-it-AT home."
+  },
+  {
+    id: 2,
+    words: ["请", "你", "把", "窗户", "关", "上"],
+    answer: [0,1,2,3,4,5],
+    sentence: "请你把窗户关上。",
+    grammar: "把字句",
+    difficulty: "easy",
+    explanation: "Polite request using 把 + directional complement 关上 (close + up = shut completely). 上 indicates completion of closing.",
+    pattern: "请 + 你 + 把 + 宾语 + 动词 + 趋向补语",
+    pitfall: "Don't say 请把窗户关 — the verb needs a complement. 上 shows the window is fully shut.",
+    mnemonic: "关上 = close + up. The 上 'seals the deal' — it's fully closed."
+  },
+  {
+    id: 3,
+    words: ["我", "把", "那本书", "借给", "同学", "了"],
+    answer: [0,1,2,3,4,5],
+    sentence: "我把那本书借给同学了。",
+    grammar: "把字句",
+    difficulty: "medium",
+    explanation: "把 sentence with double-object verb 借给: lend + to. The book is 'disposed of' — given to a classmate, hence 把 is appropriate.",
+    pattern: "Subject + 把 + Object + V给 + Recipient + 了",
+    pitfall: "借 and 给 together form 借给, which takes a recipient. Don't split them with the object in between.",
+    mnemonic: "借给 = borrow-give = lend TO. The book travels from me TO classmate."
+  },
+  {
+    id: 4,
+    words: ["妈妈", "把", "我", "的", "房间", "打扫", "得", "干干净净"],
+    answer: [0,1,2,3,4,5,6,7],
+    sentence: "妈妈把我的房间打扫得干干净净。",
+    grammar: "把字句+程度补语",
+    difficulty: "hard",
+    explanation: "把 + degree complement (得 + adjective). 得 introduces a degree/result complement. 干干净净 is a reduplicated adjective meaning 'spotlessly clean'.",
+    pattern: "Subject + 把 + Object + V + 得 + Degree Complement",
+    pitfall: "The degree complement comes AFTER 得, never before. 干干净净 is reduplication (AA BB pattern) for emphasis.",
+    mnemonic: "得 = 'to the degree that'. Mom cleaned the room TO THE DEGREE that it was spotless."
+  },
+
+  // ─── 被字句 ───
+  {
+    id: 5,
+    words: ["我", "的", "手机", "被", "弟弟", "摔", "坏", "了"],
+    answer: [0,1,2,3,4,5,6,7],
+    sentence: "我的手机被弟弟摔坏了。",
+    grammar: "被字句",
+    difficulty: "easy",
+    explanation: "Passive sentence with 被. Structure: Object (patient) + 被 + Agent + Verb + Result. The phone suffered an unwanted outcome.",
+    pattern: "受事 + 被 + 施事 + 动词 + 结果补语",
+    pitfall: "被 sentences in Chinese usually imply something unfortunate or undesirable happened. The verb needs a result complement (坏了).",
+    mnemonic: "被 = 'was done to'. My phone WAS-DROPPED by my brother → broken."
+  },
+  {
+    id: 6,
+    words: ["这个", "问题", "被", "老师", "解释", "清楚", "了"],
+    answer: [0,1,2,3,4,5,6],
+    sentence: "这个问题被老师解释清楚了。",
+    grammar: "被字句",
+    difficulty: "medium",
+    explanation: "Passive 被 with result complement 清楚 (clearly). Here the result is positive — the question was explained until it was clear.",
+    pattern: "Object + 被 + Subject + Verb + Result Complement + 了",
+    pitfall: "Even positive outcomes can use 被. The key is that the subject receives the action, not performs it.",
+    mnemonic: "清楚 = clear. The question was 'explained-clear' — now everyone understands."
+  },
+  {
+    id: 7,
+    words: ["他", "写", "的", "报告", "被", "经理", "表扬", "了"],
+    answer: [0,1,2,3,4,5,6,7],
+    sentence: "他写的报告被经理表扬了。",
+    grammar: "被字句",
+    difficulty: "medium",
+    explanation: "被 passive with a relative clause modifying the subject: 他写的报告 (the report he wrote). The report received praise.",
+    pattern: "他写的 + Noun + 被 + Agent + V + 了",
+    pitfall: "The modifier 他写的 must stay attached to 报告. Don't separate them.",
+    mnemonic: "他写的报告 = 'the report-that-he-wrote'. Then it 被 praised by manager."
+  },
+
+  // ─── 比较句 ───
+  {
+    id: 8,
+    words: ["今天", "比", "昨天", "冷", "多", "了"],
+    answer: [0,1,2,3,4,5],
+    sentence: "今天比昨天冷多了。",
+    grammar: "比较句",
+    difficulty: "easy",
+    explanation: "Comparison: A 比 B + Adjective + 多了 (much more). 多了 after the adjective intensifies the comparison — 'much colder'.",
+    pattern: "A + 比 + B + Adj + 多了",
+    pitfall: "Don't add 更 before the adjective in 比 sentences — ✗ 今天比昨天更冷多了. 多了 alone is the intensifier.",
+    mnemonic: "比 = compare. Today vs yesterday → cold + much-more. 多了 at the end says 'a lot more'."
+  },
+  {
+    id: 9,
+    words: ["她", "唱歌", "唱", "得", "没有", "她", "妹妹", "好"],
+    answer: [0,1,2,3,4,5,6,7],
+    sentence: "她唱歌唱得没有她妹妹好。",
+    grammar: "比较句+程度补语",
+    difficulty: "hard",
+    explanation: "Comparison using 没有 (not as ... as) with degree complement. Structure: A + V + 得 + 没有 + B + Adj. The verb is repeated (唱歌唱得) before the complement.",
+    pattern: "A + V + 得 + 没有 + B + Adj",
+    pitfall: "When using V + 得 comparison, the main verb is often repeated: 唱歌唱得. 没有 here means 'not as good as', not 'don't have'.",
+    mnemonic: "她唱歌唱得 = 'the degree to which she sings' → 没有她妹妹好 = 'not as her sister good'."
+  },
+  {
+    id: 10,
+    words: ["这里", "的", "天气", "跟", "我", "家乡", "不", "一样"],
+    answer: [0,1,2,3,4,5,6,7],
+    sentence: "这里的天气跟我家乡不一样。",
+    grammar: "比较句",
+    difficulty: "medium",
+    explanation: "Comparison using 跟…不一样 (not the same as). This pattern compares two things and states they differ.",
+    pattern: "A + 跟 + B + 不一样 / 一样",
+    pitfall: "跟 here is a preposition, not a conjunction. The comparison target (B) comes right after 跟.",
+    mnemonic: "跟 = 'with / compared with'. This weather with my hometown → not-same."
+  },
+
+  // ─── 了/着/过 ───
+  {
+    id: 11,
+    words: ["他", "穿", "着", "一件", "白色", "的", "衬衫"],
+    answer: [0,1,2,3,4,5,6],
+    sentence: "他穿着一件白色的衬衫。",
+    grammar: "着 (ongoing state)",
+    difficulty: "easy",
+    explanation: "着 after a verb indicates an ongoing state or manner. 穿着 = wearing (currently). This describes how someone looks right now.",
+    pattern: "Subject + Verb + 着 + Object (state description)",
+    pitfall: "着 ≠ 在+V (progressive action). 穿着 = is dressed in (state); 在穿 = is in the act of putting on.",
+    mnemonic: "着 = 'stuck in that state'. He is STUCK wearing the white shirt — ongoing condition."
+  },
+  {
+    id: 12,
+    words: ["我", "以前", "去", "过", "北京", "三次"],
+    answer: [0,1,2,3,4,5],
+    sentence: "我以前去过北京三次。",
+    grammar: "过 (experience)",
+    difficulty: "easy",
+    explanation: "过 after a verb marks a past experience. 三次 = three times. Word order: Subject + Time word + V过 + Place + Frequency.",
+    pattern: "Subject + 以前 + V过 + Object + Number + Measure word",
+    pitfall: "过 marks lifetime experience, not a specific past time. 以前 is optional but common. Frequency (三次) comes after the object.",
+    mnemonic: "过 = 'been there, done that'. The 过 stamp means you've experienced it."
+  },
+  {
+    id: 13,
+    words: ["门", "开", "着", "呢", "，", "快", "进来", "吧"],
+    answer: [0,1,2,3,4,5,6,7],
+    sentence: "门开着呢，快进来吧。",
+    grammar: "着 (ongoing state)",
+    difficulty: "medium",
+    explanation: "开着 = is open (state). 呢 adds a 'as you can see' tone. 快…吧 = hurry and do something. Two clauses connected contextually.",
+    pattern: "N + V着 + 呢 // Adv + V + 吧",
+    pitfall: "呢 at the end of a statement adds 'you know' / 'as you can see'. Don't confuse with the question particle 呢.",
+    mnemonic: "The door is open-STATE (着呢) — so come in quickly! Context → action."
+  },
+
+  // ─── 结果补语 ───
+  {
+    id: 14,
+    words: ["你", "听", "懂", "我", "说", "的", "话", "了", "吗"],
+    answer: [0,1,2,3,4,5,6,7,8],
+    sentence: "你听懂我说的话了吗？",
+    grammar: "结果补语",
+    difficulty: "easy",
+    explanation: "Result complement: 听懂 = listen + understand = comprehend by listening. 了吗 forms a yes/no question about a completed action.",
+    pattern: "Subject + V + Result Complement + Object + 了吗？",
+    pitfall: "In 听懂, 懂 is the result complement, not the main verb. You can't say ✗ 你懂听 — the order is fixed: main V + result.",
+    mnemonic: "听 = listen → 懂 = understand. The result of listening IS understanding. Verb + Result."
+  },
+  {
+    id: 15,
+    words: ["这个", "字", "他", "写", "错", "了"],
+    answer: [0,1,2,3,4,5],
+    sentence: "这个字他写错了。",
+    grammar: "结果补语",
+    difficulty: "medium",
+    explanation: "Topicalization: 这个字 (this character) is fronted as a topic, then 他写错了 comments on it. 错 = wrongly (result complement).",
+    pattern: "Topic + Subject + V + Result + 了",
+    pitfall: "The topic is placed first for emphasis. This is NOT a 把 sentence, though it looks similar. No 把 needed when topicalizing.",
+    mnemonic: "This character — he wrote-wrong. The topic leads, then the comment follows."
+  },
+  {
+    id: 16,
+    words: ["我", "终于", "找", "到", "那", "本", "书", "了"],
+    answer: [0,1,2,3,4,5,6,7],
+    sentence: "我终于找到那本书了。",
+    grammar: "结果补语",
+    difficulty: "easy",
+    explanation: "找到 = search + arrive = find successfully. 终于 = finally. 了 marks completion. 终于 reinforces the sense of achievement after effort.",
+    pattern: "Subject + 终于 + V + 到 + Object + 了",
+    pitfall: "到 as a result complement means 'successfully arrived at the goal'. ✗ 找到了那本书 is wrong word order — object comes after 到.",
+    mnemonic: "终于 = FINALLY! Found-arrived (找到) the book. The 到 means you reached your target."
+  },
+
+  // ─── 趋向补语 ───
+  {
+    id: 17,
+    words: ["请", "把", "你", "的", "作业", "交", "上来"],
+    answer: [0,1,2,3,4,5,6],
+    sentence: "请把你的作业交上来。",
+    grammar: "趋向补语",
+    difficulty: "medium",
+    explanation: "Directional complement 上来: upward toward the speaker. 交上来 = hand-up-here = turn in (to me/us). Combined with 把 sentence.",
+    pattern: "请 + 把 + Object + V + 上来/下去/进来...",
+    pitfall: "上来 = coming up toward speaker; 上去 = going up away from speaker. Choose based on movement direction relative to speaker.",
+    mnemonic: "上来 = up + come (toward me). Turn your homework UP to me."
+  },
+  {
+    id: 18,
+    words: ["他", "跑", "进", "教室", "里", "去", "了"],
+    answer: [0,1,2,3,4,5,6],
+    sentence: "他跑进教室里去了。",
+    grammar: "趋向补语",
+    difficulty: "hard",
+    explanation: "Complex directional complement: 进…去 = into (away from speaker). 跑进…里去 = run into (the classroom). The place word 教室里 is inserted in the middle.",
+    pattern: "V + 进/出/上/下 + Place + 里/外 + 来/去",
+    pitfall: "With complex directionals, the place word is sandwiched: V + 进 + 教室里 + 去. Never put place after 去.",
+    mnemonic: "进…去 = go inside (away from you). He RAN-IN → classroom → AWAY."
+  },
+
+  // ─── 程度补语 ───
+  {
+    id: 19,
+    words: ["她", "高兴", "得", "跳", "起来", "了"],
+    answer: [0,1,2,3,4,5],
+    sentence: "她高兴得跳起来了。",
+    grammar: "程度补语",
+    difficulty: "medium",
+    explanation: "Degree complement with 得: adjective/verb + 得 + complement describing the extent. 高兴得跳起来 = so happy (that she) jumped up.",
+    pattern: "Subject + Adj/V + 得 + [action/state showing degree]",
+    pitfall: "得 here introduces the complement showing degree/result. The complement after 得 can be a verb phrase (not just adjective).",
+    mnemonic: "得 = 'to the extent that'. Happy TO THE EXTENT THAT she jumped up."
+  },
+  {
+    id: 20,
+    words: ["这个", "电影", "好看", "极", "了"],
+    answer: [0,1,2,3,4],
+    sentence: "这个电影好看极了。",
+    grammar: "程度补语",
+    difficulty: "easy",
+    explanation: "极了 after an adjective = extremely (adjective). Structure: Adj + 极了. Much more emphatic than 很 + Adj.",
+    pattern: "Adj + 极了 (= extremely Adj)",
+    pitfall: "极了 cannot be separated. ✗ 极好看了 is wrong. 极了 always follows the adjective.",
+    mnemonic: "极 = extreme. 好看极了 = good-looking EXTREMELY. Like saying 'beautiful to the max!'"
+  },
+
+  // ─── 虽然…但是… ───
+  {
+    id: 21,
+    words: ["虽然", "天气", "很", "冷", "，", "但是", "他", "还是", "去", "上班", "了"],
+    answer: [0,1,2,3,4,5,6,7,8,9,10],
+    sentence: "虽然天气很冷，但是他还是去上班了。",
+    grammar: "虽然…但是",
+    difficulty: "medium",
+    explanation: "Concessive pattern: although... nevertheless. 还是 reinforces the contrast: despite cold weather, he went to work anyway. 还是 = still/nevertheless.",
+    pattern: "虽然 + Clause₁，但是 + Subject + 还是 + V",
+    pitfall: "虽然 and 但是 must be in separate clauses. Don't put both in the same clause. 还是 after 但是 adds 'nonetheless' nuance.",
+    mnemonic: "虽然 = 'even though'. 但是 = 'but'. 还是 = 'still'. Although cold, but still went anyway."
+  },
+  {
+    id: 22,
+    words: ["虽然", "她", "很", "努力", "，", "但是", "成绩", "并不", "理想"],
+    answer: [0,1,2,3,4,5,6,7,8],
+    sentence: "虽然她很努力，但是成绩并不理想。",
+    grammar: "虽然…但是",
+    difficulty: "medium",
+    explanation: "并不 = not at all / by no means. Stronger negation than 不. Although she worked hard, the results were not ideal at all.",
+    pattern: "虽然 + S + Adj，但是 + N + 并不 + Adj",
+    pitfall: "并不 is more emphatic than 不. It emphasizes the disappointing contrast. Don't use 没有 here (which would mean non-existence).",
+    mnemonic: "并不 = 'by no means'. The 并 adds a 'contrary to expectation' feel: you'd expect good results, but NO."
+  },
+
+  // ─── 不仅…而且… ───
+  {
+    id: 23,
+    words: ["她", "不仅", "会", "说", "中文", "，", "而且", "还", "会", "写", "汉字"],
+    answer: [0,1,2,3,4,5,6,7,8,9,10],
+    sentence: "她不仅会说中文，而且还会写汉字。",
+    grammar: "不仅…而且",
+    difficulty: "medium",
+    explanation: "Progressive addition: not only... but also. 还 before the second clause reinforces '(and) also'. Both clauses share the same subject.",
+    pattern: "Subject + 不仅 + V₁，而且 + 还 + V₂",
+    pitfall: "When subject is the same in both clauses, put it before 不仅. If subjects differ, each clause has its own subject.",
+    mnemonic: "不仅 = 'not only'. 而且 = 'moreover/but also'. 还 = 'even/also'. Stack them up for emphasis!"
+  },
+  {
+    id: 24,
+    words: ["这个", "餐厅", "不仅", "价格", "合理", "，", "而且", "味道", "也", "很", "好"],
+    answer: [0,1,2,3,4,5,6,7,8,9,10],
+    sentence: "这个餐厅不仅价格合理，而且味道也很好。",
+    grammar: "不仅…而且",
+    difficulty: "medium",
+    explanation: "不仅…而且 with different sub-topics: price (价格) and taste (味道). 也 in the second clause adds 'also'.",
+    pattern: "Topic + 不仅 + Noun₁ + Adj，而且 + Noun₂ + 也 + Adj",
+    pitfall: "Each clause can have a different subject/topic. 也 reinforces the additive meaning.",
+    mnemonic: "Restaurant: not-only price reasonable, moreover taste also good. Two selling points!"
+  },
+
+  // ─── 如果…就… ───
+  {
+    id: 25,
+    words: ["如果", "你", "有", "问题", "，", "就", "给", "我", "发", "信息"],
+    answer: [0,1,2,3,4,5,6,7,8,9],
+    sentence: "如果你有问题，就给我发信息。",
+    grammar: "如果…就",
+    difficulty: "easy",
+    explanation: "Conditional: if... then. 如果 introduces condition; 就 introduces result/consequence. The consequence is a direct instruction.",
+    pattern: "如果 + Condition，就 + Result",
+    pitfall: "就 must be at the START of the result clause, right before the verb or subject. Don't put it at the end.",
+    mnemonic: "如果 = 'if'. 就 = 'then'. IF problem THEN send-me-message. Cause → effect."
+  },
+  {
+    id: 26,
+    words: ["如果", "明天", "下雨", "，", "我们", "就", "不", "去", "爬山", "了"],
+    answer: [0,1,2,3,4,5,6,7,8,9],
+    sentence: "如果明天下雨，我们就不去爬山了。",
+    grammar: "如果…就",
+    difficulty: "medium",
+    explanation: "Conditional + negation: if it rains, then we won't go hiking. 了 at the end indicates a change from original plan.",
+    pattern: "如果 + 时间 + V，Subject + 就 + 不 + V + 了",
+    pitfall: "了 here marks change of plan/new situation, not completion. The negative word 不 comes before the verb, after 就.",
+    mnemonic: "If rain → then we-WON'T-go-anymore. The 了 shows a plan has changed."
+  },
+
+  // ─── 因为…所以… ───
+  {
+    id: 27,
+    words: ["因为", "堵车", "，", "所以", "他", "迟到", "了"],
+    answer: [0,1,2,3,4,5,6],
+    sentence: "因为堵车，所以他迟到了。",
+    grammar: "因为…所以",
+    difficulty: "easy",
+    explanation: "Cause and effect: because (of traffic jam), therefore (he was late). Both connectives are used together in Chinese, unlike English.",
+    pattern: "因为 + Cause，所以 + Subject + Result",
+    pitfall: "In Chinese, BOTH 因为 and 所以 are typically used together. Don't use only one (unlike English where 'because' alone suffices).",
+    mnemonic: "因为 = because. 所以 = therefore. Chinese uses BOTH conjunctions, like brackets around the logic."
+  },
+  {
+    id: 28,
+    words: ["他", "因为", "生病", "了", "，", "所以", "没", "有", "来", "上课"],
+    answer: [0,1,2,3,4,5,6,7,8,9],
+    sentence: "他因为生病了，所以没有来上课。",
+    grammar: "因为…所以",
+    difficulty: "medium",
+    explanation: "When subject appears in the first clause before 因为, the subject can be fronted. 没有 negates the completed action of coming to class.",
+    pattern: "Subject + 因为 + Cause + 了，所以 + 没有 + V",
+    pitfall: "Subject can go before 因为 (as here) or after 所以, but not both. 没有 negates completed actions (not 不).",
+    mnemonic: "He → because → sick → therefore → didn't come to class. Subject leads the whole sentence."
+  },
+
+  // ─── 连…都/也… ───
+  {
+    id: 29,
+    words: ["他", "连", "自己", "的", "生日", "都", "忘", "了"],
+    answer: [0,1,2,3,4,5,6,7],
+    sentence: "他连自己的生日都忘了。",
+    grammar: "连…都/也",
+    difficulty: "medium",
+    explanation: "连…都 = even... (indicating something surprising or extreme). He even forgot his own birthday! 都 here means 'even' in this construction.",
+    pattern: "Subject + 连 + [extreme example] + 都/也 + V",
+    pitfall: "连 introduces the extreme/surprising element. 都 or 也 must follow. ✗ 他连都忘了自己的生日 — wrong position.",
+    mnemonic: "连 = 'even'. 都 = 'also/even'. EVEN his own birthday, he forgot. The surprise element goes between 连 and 都."
+  },
+  {
+    id: 30,
+    words: ["这道", "题", "连", "老师", "也", "不", "会", "做"],
+    answer: [0,1,2,3,4,5,6,7],
+    sentence: "这道题连老师也不会做。",
+    grammar: "连…都/也",
+    difficulty: "medium",
+    explanation: "Topic + 连…也: even the teacher can't do this problem (implies it's extremely difficult). Topic 这道题 is fronted.",
+    pattern: "Topic + 连 + [extreme case] + 也 + 不/没 + V",
+    pitfall: "连…也 and 连…都 are interchangeable. The extreme case (teacher) is sandwiched between 连 and 也/都.",
+    mnemonic: "Even TEACHER also can't do it → must be super hard! 连 introduces the surprise."
+  },
+
+  // ─── 是…的 ───
+  {
+    id: 31,
+    words: ["我", "是", "去年", "来", "北京", "的"],
+    answer: [0,1,2,3,4,5],
+    sentence: "我是去年来北京的。",
+    grammar: "是…的 (emphasis)",
+    difficulty: "easy",
+    explanation: "是…的 emphasizes time/manner/place of a past action. Here it emphasizes WHEN (去年). The action of coming is confirmed; 是…的 adds focus.",
+    pattern: "Subject + 是 + [Time/Manner/Place] + V + Object + 的",
+    pitfall: "是…的 only works for past events, not future plans. It emphasizes a specific detail about how/when/where, not whether the action happened.",
+    mnemonic: "是…的 = spotlight. Shine the light on 去年 (last year). It was LAST YEAR that I came."
+  },
+  {
+    id: 32,
+    words: ["这件", "衣服", "是", "在", "网上", "买", "的"],
+    answer: [0,1,2,3,4,5,6],
+    sentence: "这件衣服是在网上买的。",
+    grammar: "是…的 (emphasis)",
+    difficulty: "easy",
+    explanation: "是…的 emphasizes WHERE (在网上 = online). The clothes were bought — the focus is the location of purchase.",
+    pattern: "Object + 是 + 在 + Place + V + 的",
+    pitfall: "Object can be topicalized before 是. The place word 在网上 comes inside the 是…的 brackets.",
+    mnemonic: "Where was it bought? ONLINE (在网上). The 是…的 frame spotlights the location."
+  },
+
+  // ─── 越来越 ───
+  {
+    id: 33,
+    words: ["他", "的", "中文", "越来越", "流利", "了"],
+    answer: [0,1,2,3,4,5],
+    sentence: "他的中文越来越流利了。",
+    grammar: "越来越",
+    difficulty: "easy",
+    explanation: "越来越 + Adj = more and more (adjective). Indicates progressive change over time. 了 marks the new situation.",
+    pattern: "Subject + 越来越 + Adj + 了",
+    pitfall: "越来越 always precedes the adjective, never after it. ✗ 流利越来越 is wrong.",
+    mnemonic: "越来越 = more and more (越 = exceed, 来 = come). Each 越 adds another layer of 'more'."
+  },
+  {
+    id: 34,
+    words: ["天气", "越来越", "冷", "，", "大家", "要", "注意", "保暖"],
+    answer: [0,1,2,3,4,5,6,7],
+    sentence: "天气越来越冷，大家要注意保暖。",
+    grammar: "越来越",
+    difficulty: "medium",
+    explanation: "Two clauses: progressive change + advice. 越来越冷 (getting colder and colder) provides context; 要注意保暖 gives the recommendation.",
+    pattern: "越来越 + Adj (cause) → 要 + V (advice)",
+    pitfall: "越来越 doesn't need 了 when followed by another clause. 了 is optional or omitted when more follows.",
+    mnemonic: "Getting colder → must stay warm. The 越来越 weather creates urgency for action."
+  },
+
+  // ─── 连动句 ───
+  {
+    id: 35,
+    words: ["他", "坐", "飞机", "去", "上海", "出差"],
+    answer: [0,1,2,3,4,5],
+    sentence: "他坐飞机去上海出差。",
+    grammar: "连动句",
+    difficulty: "easy",
+    explanation: "Serial verb construction: V₁ + V₂ in sequence. 坐飞机 (take airplane) = means of travel; 去上海 = destination; 出差 = purpose. All share the same subject.",
+    pattern: "Subject + V₁(means) + V₂(destination) + V₃(purpose)",
+    pitfall: "In serial verb sentences, each verb must be in logical sequence. You can't reverse: ✗ 出差去上海坐飞机.",
+    mnemonic: "He: flies → goes to Shanghai → on business trip. The verbs chain in time order."
+  },
+  {
+    id: 36,
+    words: ["她", "去", "图书馆", "借", "了", "几本", "书"],
+    answer: [0,1,2,3,4,5,6],
+    sentence: "她去图书馆借了几本书。",
+    grammar: "连动句",
+    difficulty: "easy",
+    explanation: "Serial verbs: go (to library) + borrow (books). The first verb 去 shows movement to a place; the second 借了 shows what was done there.",
+    pattern: "Subject + 去 + Place + V + 了 + Object",
+    pitfall: "了 goes after 借, not after 去 in this sentence. The completion is borrowing, not going.",
+    mnemonic: "She went TO library → borrowed books. The GOING enables the borrowing."
+  },
+
+  // ─── 兼语句 ───
+  {
+    id: 37,
+    words: ["老师", "让", "我", "回答", "这个", "问题"],
+    answer: [0,1,2,3,4,5],
+    sentence: "老师让我回答这个问题。",
+    grammar: "兼语句",
+    difficulty: "easy",
+    explanation: "Pivotal construction: the object of the first verb is the subject of the second. 我 = object of 让 + subject of 回答.",
+    pattern: "Subject₁ + 让/请/叫 + Pivot + V₂ + Object₂",
+    pitfall: "The pivot word (我) serves double duty. Common pivot verbs: 让(let), 请(invite), 叫(tell), 派(send), 要(require).",
+    mnemonic: "Teacher → lets → ME [pivot] → answer the question. I am both 'let' and 'answer'."
+  },
+  {
+    id: 38,
+    words: ["妈妈", "叫", "我", "早点", "回家"],
+    answer: [0,1,2,3,4],
+    sentence: "妈妈叫我早点回家。",
+    grammar: "兼语句",
+    difficulty: "easy",
+    explanation: "叫 = tell/call (pivotal verb). 我 is the pivot. 早点 = a bit earlier. Mom told me to come home earlier.",
+    pattern: "Subject + 叫/让 + Person + Adv + V",
+    pitfall: "早点 = 早一点 (a bit earlier). The 点 softens the adverb. Don't confuse 叫 (tell to do) with 告诉 (inform).",
+    mnemonic: "Mom calls (叫) → me [pivot] → to come home early. 叫 = she's calling me to do something."
+  },
+
+  // ─── 对…来说 ───
+  {
+    id: 39,
+    words: ["对", "我", "来说", "，", "健康", "比", "金钱", "重要"],
+    answer: [0,1,2,3,4,5,6,7],
+    sentence: "对我来说，健康比金钱重要。",
+    grammar: "对…来说",
+    difficulty: "medium",
+    explanation: "对…来说 = as for / from the perspective of. Fronted prepositional phrase establishing the speaker's standpoint, followed by the main statement.",
+    pattern: "对 + Person + 来说，[main clause]",
+    pitfall: "对…来说 always comes at the START of the sentence as a frame. The comparison inside can use 比.",
+    mnemonic: "对我来说 = 'Speaking FROM my perspective'. Set the viewpoint first, then give the opinion."
+  },
+  {
+    id: 40,
+    words: ["对", "学生", "来说", "，", "养成", "好", "的", "学习习惯", "很", "重要"],
+    answer: [0,1,2,3,4,5,6,7,8,9],
+    sentence: "对学生来说，养成好的学习习惯很重要。",
+    grammar: "对…来说",
+    difficulty: "medium",
+    explanation: "养成 = develop/form (a habit). 对学生来说 frames the perspective. The main clause 养成好的学习习惯很重要 gives the viewpoint.",
+    pattern: "对 + Group + 来说，V + N + 很 + Adj",
+    pitfall: "The subject of the main clause can be omitted if clear from context. 养成 is a common HSK 4 verb meaning to cultivate/form habits.",
+    mnemonic: "养成 = 'nurture into formation'. For students: forming good study habits is important."
+  },
+
+  // ─── 除了…以外 ───
+  {
+    id: 41,
+    words: ["除了", "英语", "以外", "，", "她", "还", "会", "说", "法语"],
+    answer: [0,1,2,3,4,5,6,7,8],
+    sentence: "除了英语以外，她还会说法语。",
+    grammar: "除了…以外",
+    difficulty: "easy",
+    explanation: "除了…以外 + 还 = in addition to (inclusive). She speaks French IN ADDITION TO English (both included). 还 signals addition.",
+    pattern: "除了 + X + 以外，Subject + 还 + V",
+    pitfall: "除了…以外 + 还 = ADDITION (both included). 除了…以外 + 都不/没 = EXCLUSION (only X, rest don't).",
+    mnemonic: "除了…以外 with 还 = 'besides that, also'. WITH English PLUS French. Inclusive."
+  },
+  {
+    id: 42,
+    words: ["除了", "小明", "以外", "，", "大家", "都", "来", "了"],
+    answer: [0,1,2,3,4,5,6,7],
+    sentence: "除了小明以外，大家都来了。",
+    grammar: "除了…以外",
+    difficulty: "easy",
+    explanation: "除了…以外 + 都 = except (exclusive). Everyone came EXCEPT Xiao Ming. 都 sweeps over the rest.",
+    pattern: "除了 + Exception + 以外，Subject + 都 + V",
+    pitfall: "除了…以外 + 都 = EXCEPTION (everyone else, not X). The opposite of the previous pattern. Same structure, different meaning based on 还 vs 都.",
+    mnemonic: "EXCEPT Xiao Ming, everyone came. 都 = 'all' (of the rest). Exclusive."
+  },
+
+  // ─── Complex / Mixed patterns ───
+  {
+    id: 43,
+    words: ["他", "一边", "听音乐", "，", "一边", "做", "作业"],
+    answer: [0,1,2,3,4,5,6],
+    sentence: "他一边听音乐，一边做作业。",
+    grammar: "一边…一边",
+    difficulty: "easy",
+    explanation: "一边…一边 = while doing A, simultaneously doing B. Two actions happening at the same time by the same subject.",
+    pattern: "Subject + 一边 + V₁，一边 + V₂",
+    pitfall: "Both 一边 clauses must share the same subject. The actions must be simultaneously possible.",
+    mnemonic: "一边 = 'one side'. On one side listen music, on another side do homework. Two things at once!"
+  },
+  {
+    id: 44,
+    words: ["只要", "你", "努力", "，", "就", "一定", "能", "成功"],
+    answer: [0,1,2,3,4,5,6,7],
+    sentence: "只要你努力，就一定能成功。",
+    grammar: "只要…就",
+    difficulty: "medium",
+    explanation: "只要…就 = as long as... then. A sufficient condition: as long as you work hard, you WILL succeed. More confident than 如果…就.",
+    pattern: "只要 + Condition，就 + Result (certain outcome)",
+    pitfall: "只要 is more confident than 如果: 只要 = 'as long as / all you need is'; 如果 = 'if'. The result with 只要 is more assured.",
+    mnemonic: "只要 = 'only need'. ONLY NEED effort → DEFINITELY can succeed. All-you-need conditional."
+  },
+  {
+    id: 45,
+    words: ["既然", "你", "已经", "决定", "了", "，", "就", "不要", "后悔"],
+    answer: [0,1,2,3,4,5,6,7,8],
+    sentence: "既然你已经决定了，就不要后悔。",
+    grammar: "既然…就",
+    difficulty: "hard",
+    explanation: "既然…就 = since (something is already the case)...then. Refers to an acknowledged fact/situation. Since you've already decided, don't regret it.",
+    pattern: "既然 + [known fact/situation]，就 + [advice/consequence]",
+    pitfall: "既然 refers to something ALREADY TRUE/DONE. Different from 如果 (hypothetical) and 只要 (condition). 已经 reinforces the 'already' aspect.",
+    mnemonic: "既然 = 'since it's already the case'. Since-already-decided → just don't regret. No going back!"
+  },
+  {
+    id: 46,
+    words: ["无论", "多么", "难", "，", "他", "都", "不", "放弃"],
+    answer: [0,1,2,3,4,5,6,7],
+    sentence: "无论多么难，他都不放弃。",
+    grammar: "无论…都",
+    difficulty: "hard",
+    explanation: "无论…都 = no matter how... still. 无论多么难 = no matter how difficult. 都不放弃 = still doesn't give up. Universal condition.",
+    pattern: "无论 + 多么/多/什么/谁 + [condition]，Subject + 都 + V",
+    pitfall: "无论 requires 都 or 也 in the result clause. Don't omit 都. 多么 = 'however much/how'. 无论/不管 are interchangeable.",
+    mnemonic: "无论 = 'no matter what'. 都 = 'in all cases'. NO MATTER how hard, IN ALL CASES won't give up."
+  },
+  {
+    id: 47,
+    words: ["我", "宁可", "走路", "去", "，", "也", "不", "坐", "那辆", "车"],
+    answer: [0,1,2,3,4,5,6,7,8,9],
+    sentence: "我宁可走路去，也不坐那辆车。",
+    grammar: "宁可…也不",
+    difficulty: "hard",
+    explanation: "宁可…也不 = would rather A than B. Expresses a strong preference: I'd rather walk than ride in that car.",
+    pattern: "Subject + 宁可 + V₁，也不 + V₂",
+    pitfall: "宁可 introduces the preferred (lesser evil) option. 也不 introduces what is rejected. Don't swap the order.",
+    mnemonic: "宁可 = 'would rather'. 也不 = 'and still not'. I'd-rather walk THAN ride that car."
+  },
+  {
+    id: 48,
+    words: ["随着", "科技", "的", "发展", "，", "人们", "的", "生活", "越来越", "方便"],
+    answer: [0,1,2,3,4,5,6,7,8,9],
+    sentence: "随着科技的发展，人们的生活越来越方便。",
+    grammar: "随着…越来越",
+    difficulty: "hard",
+    explanation: "随着 = along with / as (something develops). Introduces a parallel progression. As technology develops, life becomes more and more convenient.",
+    pattern: "随着 + N + 的 + V，Subject + 越来越 + Adj",
+    pitfall: "随着 introduces a co-occurring change, not a cause. The subject of 随着 clause is different from the main clause subject.",
+    mnemonic: "随着 = 'following along with'. As tech grows → life convenience grows. Parallel progression."
+  },
+  {
+    id: 49,
+    words: ["尽管", "困难", "重重", "，", "他们", "仍然", "坚持", "完成", "了", "任务"],
+    answer: [0,1,2,3,4,5,6,7,8,9],
+    sentence: "尽管困难重重，他们仍然坚持完成了任务。",
+    grammar: "尽管…仍然",
+    difficulty: "hard",
+    explanation: "尽管 = despite / although (stronger than 虽然). 困难重重 = full of difficulties (重重 = layer upon layer). 仍然 = still/nevertheless. Despite all difficulties, they still persisted.",
+    pattern: "尽管 + [adversity]，Subject + 仍然 + V",
+    pitfall: "尽管 is more literary/emphatic than 虽然. 重重 after a noun = 'multiple/numerous layers of'. 坚持完成 = persist until completion.",
+    mnemonic: "尽管 = despite (formal). 困难重重 = difficulties piled high. 仍然 = still (they pushed through)."
+  },
+  {
+    id: 50,
+    words: ["他", "不但", "没有", "道歉", "，", "反而", "责怪", "起", "别人", "来"],
+    answer: [0,1,2,3,4,5,6,7,8,9],
+    sentence: "他不但没有道歉，反而责怪起别人来。",
+    grammar: "不但…反而",
+    difficulty: "hard",
+    explanation: "不但…反而 = not only didn't (positive), but instead did the opposite. Expresses a reversal of expectation: not only didn't apologize, but blamed others instead.",
+    pattern: "Subject + 不但 + 没有/不 + V₁，反而 + V₂ + 起 + Object + 来",
+    pitfall: "反而 = 'on the contrary / instead'. Different from 而且 (furthermore). 责怪起…来 is a complex resultative/inceptive pattern showing an action starts and continues.",
+    mnemonic: "不但…反而 = 'not only not... but on the contrary'. He didn't apologize — worse, he BLAMED others!"
+  }
+];
+
+// ============================================================
+// APPLICATION STATE
+// ============================================================
+let state = {
+  mode: 'practice',            // 'practice' | 'review'
+  currentIndex: 0,
+  answers: [],                 // {status: 'correct'|'wrong'|'skipped', userAnswer: [], timeTaken: 0}
+  startTime: null,
+  questionStartTime: null,
+  timerInterval: null,
+  elapsedSeconds: 0,
+  dragSrc: null,
+  dragSrcZone: null,
+  submitted: false,
+  // For current question
+  wordBank: [],   // indices of words still in bank
+  answerArr: [],  // indices of words in answer zone (in order)
+};
+
+// Load from localStorage
+function loadProgress() {
+  try {
+    const saved = localStorage.getItem('hsk4_drill_v2');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed.answers && parsed.answers.length === 50) {
+        state.answers = parsed.answers;
+        state.elapsedSeconds = parsed.elapsedSeconds || 0;
+      }
+    }
+  } catch(e) {}
+}
+
+function saveProgress() {
+  try {
+    localStorage.setItem('hsk4_drill_v2', JSON.stringify({
+      answers: state.answers,
+      elapsedSeconds: state.elapsedSeconds
+    }));
+  } catch(e) {}
+}
+
+// ============================================================
+// SCREEN NAVIGATION
+// ============================================================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function showWelcome() {
+  stopTimer();
+  showScreen('screen-welcome');
+  document.getElementById('headerCenter').style.display = 'none';
+  document.getElementById('reviewModeBtn').style.display = 'none';
+}
+
+function startExam(fromIndex = 0) {
+  showScreen('screen-exam');
+  document.getElementById('headerCenter').style.display = 'flex';
+  document.getElementById('reviewModeBtn').style.display = 'block';
+  loadProgress();
+  state.currentIndex = fromIndex;
+  // Find first unanswered if starting fresh
+  if (fromIndex === 0) {
+    let firstUnanswered = state.answers.findIndex(a => !a || a.status === 'skipped');
+    if (firstUnanswered === -1 && state.answers.length === 50) firstUnanswered = 0;
+    if (firstUnanswered >= 0) state.currentIndex = firstUnanswered;
+  }
+  buildNavGrid();
+  loadQuestion(state.currentIndex);
+  startTimer();
+}
+
+function startReview() {
+  showScreen('screen-review');
+  document.getElementById('headerCenter').style.display = 'none';
+  document.getElementById('reviewModeBtn').style.display = 'none';
+  buildReviewList();
+}
+
+function toggleReviewMode() {
+  startReview();
+}
+
+// ============================================================
+// TIMER
+// ============================================================
+function startTimer() {
+  stopTimer();
+  state.timerInterval = setInterval(() => {
+    state.elapsedSeconds++;
+    updateTimerDisplay();
+  }, 1000);
+}
+
+function stopTimer() {
+  if (state.timerInterval) clearInterval(state.timerInterval);
+  state.timerInterval = null;
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(state.elapsedSeconds / 60).toString().padStart(2, '0');
+  const s = (state.elapsedSeconds % 60).toString().padStart(2, '0');
+  document.getElementById('timerDisplay').textContent = `${m}:${s}`;
+}
+
+// ============================================================
+// QUESTION LOADING
+// ============================================================
+function loadQuestion(index) {
+  state.currentIndex = index;
+  state.submitted = false;
+  state.questionStartTime = Date.now();
+
+  const q = QUESTIONS[index];
+  const savedAnswer = state.answers[index];
+
+  // Shuffle words for bank (only if not previously attempted with that order)
+  let shuffled = [...q.words.keys()];
+  if (!savedAnswer || savedAnswer.status === 'skipped') {
+    // Fisher-Yates shuffle
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+  } else {
+    // In review mode within exam, show shuffled but allow re-attempt
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+  }
+
+  state.wordBank = [...shuffled];
+  state.answerArr = [];
+
+  // Update meta
+  document.getElementById('qNumber').textContent = `Question ${index + 1} of ${QUESTIONS.length}`;
+  document.getElementById('qGrammar').textContent = q.grammar;
+
+  const diffEl = document.getElementById('qDifficulty');
+  diffEl.textContent = q.difficulty === 'easy' ? 'Easy' : q.difficulty === 'medium' ? 'Medium' : 'Hard';
+  diffEl.className = 'difficulty-badge diff-' + q.difficulty;
+
+  // Render zones
+  renderWordBank();
+  renderAnswerZone();
+
+  // Reset feedback
+  const fp = document.getElementById('feedbackPanel');
+  fp.className = 'feedback-panel';
+  fp.innerHTML = '';
+
+  // Reset buttons
+  document.getElementById('btnSubmit').style.display = '';
+  document.getElementById('btnSubmit').disabled = false;
+  document.getElementById('btnNext').style.display = 'none';
+
+  // Update header stats
+  updateHeaderStats();
+  updateProgressBar();
+  updateNavGrid();
+}
+
+function renderWordBank() {
+  const q = QUESTIONS[state.currentIndex];
+  const bank = document.getElementById('wordBank');
+  bank.innerHTML = '';
+  state.wordBank.forEach(wi => {
+    bank.appendChild(createChip(wi, 'bank'));
+  });
+}
+
+function renderAnswerZone() {
+  const zone = document.getElementById('answerZone');
+  const placeholder = document.getElementById('answerPlaceholder');
+  // Clear non-placeholder children
+  Array.from(zone.children).forEach(c => { if (c !== placeholder) c.remove(); });
+
+  if (state.answerArr.length === 0) {
+    placeholder.style.display = '';
+  } else {
+    placeholder.style.display = 'none';
+    state.answerArr.forEach((wi, pos) => {
+      const chip = createChip(wi, 'answer', pos);
+      zone.appendChild(chip);
+    });
+  }
+}
+
+function createChip(wordIndex, zone, pos) {
+  const q = QUESTIONS[state.currentIndex];
+  const chip = document.createElement('div');
+  chip.className = 'word-chip' + (zone === 'answer' ? ' in-answer' : '');
+  chip.textContent = q.words[wordIndex];
+  chip.dataset.wi = wordIndex;
+  chip.dataset.zone = zone;
+  if (pos !== undefined) chip.dataset.pos = pos;
+  chip.draggable = true;
+
+  if (zone === 'answer' && pos !== undefined) {
+    const idx = document.createElement('span');
+    idx.className = 'chip-index';
+    idx.textContent = pos + 1;
+    chip.appendChild(idx);
+  }
+
+  // Click to move
+  chip.addEventListener('click', () => {
+    if (state.submitted) return;
+    if (zone === 'bank') {
+      moveToAnswer(wordIndex);
+    } else {
+      moveToBank(pos);
+    }
+  });
+
+  // Drag
+  chip.addEventListener('dragstart', (e) => {
+    state.dragSrc = wordIndex;
+    state.dragSrcZone = zone;
+    state.dragSrcPos = pos;
+    chip.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  });
+  chip.addEventListener('dragend', () => chip.classList.remove('dragging'));
+
+  return chip;
+}
+
+function moveToAnswer(wordIndex) {
+  const bankIdx = state.wordBank.indexOf(wordIndex);
+  if (bankIdx >= 0) state.wordBank.splice(bankIdx, 1);
+  state.answerArr.push(wordIndex);
+  renderWordBank();
+  renderAnswerZone();
+  updateSubmitBtn();
+}
+
+function moveToBank(pos) {
+  const wordIndex = state.answerArr[pos];
+  state.answerArr.splice(pos, 1);
+  state.wordBank.push(wordIndex);
+  renderWordBank();
+  renderAnswerZone();
+  updateSubmitBtn();
+}
+
+function updateSubmitBtn() {
+  const q = QUESTIONS[state.currentIndex];
+  document.getElementById('btnSubmit').disabled = state.answerArr.length !== q.words.length;
+}
+
+// Drag & Drop
+function handleDragOver(e) {
+  e.preventDefault();
+  e.currentTarget.classList.add('drag-over');
+  e.dataTransfer.dropEffect = 'move';
+}
+
+function handleDragLeave(e) {
+  e.currentTarget.classList.remove('drag-over');
+}
+
+function handleDrop(e, targetZone) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (state.submitted) return;
+  if (state.dragSrc === null) return;
+
+  if (targetZone === 'answer' && state.dragSrcZone === 'bank') {
+    moveToAnswer(state.dragSrc);
+  } else if (targetZone === 'bank' && state.dragSrcZone === 'answer') {
+    moveToBank(state.dragSrcPos);
+  }
+  // Intra-zone reordering for answer zone
+  else if (targetZone === 'answer' && state.dragSrcZone === 'answer') {
+    // Remove from current pos, re-append at end (simplified)
+    state.answerArr.splice(state.dragSrcPos, 1);
+    state.answerArr.push(state.dragSrc);
+    renderAnswerZone();
+    updateSubmitBtn();
+  }
+
+  state.dragSrc = null;
+}
+
+function clearAnswer() {
+  if (state.submitted) return;
+  state.answerArr.forEach(wi => state.wordBank.push(wi));
+  state.answerArr = [];
+  renderWordBank();
+  renderAnswerZone();
+  updateSubmitBtn();
+}
+
+// ============================================================
+// SUBMIT & FEEDBACK
+// ============================================================
+function submitAnswer() {
+  if (state.submitted) return;
+  const q = QUESTIONS[state.currentIndex];
+  if (state.answerArr.length !== q.words.length) return;
+
+  state.submitted = true;
+  const timeTaken = Math.round((Date.now() - state.questionStartTime) / 1000);
+
+  // Check correctness
+  const isCorrect = state.answerArr.every((wi, i) => q.answer[i] === wi);
+
+  // Record
+  state.answers[state.currentIndex] = {
+    status: isCorrect ? 'correct' : 'wrong',
+    userAnswer: [...state.answerArr],
+    timeTaken
+  };
+  saveProgress();
+
+  // Update nav
+  updateNavGrid();
+  updateHeaderStats();
+
+  // Show feedback
+  showFeedback(isCorrect, timeTaken);
+
+  // Swap buttons
+  document.getElementById('btnSubmit').style.display = 'none';
+  const btnNext = document.getElementById('btnNext');
+  btnNext.style.display = 'block';
+  btnNext.textContent = state.currentIndex < QUESTIONS.length - 1 ? '下一题 · Next →' : '查看成绩 · Results';
+
+  // Disable chips
+  document.querySelectorAll('.word-chip').forEach(c => c.style.cursor = 'default');
+
+  // Celebrate
+  if (isCorrect) launchConfetti();
+  else document.getElementById('questionCard').classList.add('shake');
+  setTimeout(() => document.getElementById('questionCard').classList.remove('shake'), 400);
+}
+
+function showFeedback(isCorrect, timeTaken) {
+  const q = QUESTIONS[state.currentIndex];
+  const fp = document.getElementById('feedbackPanel');
+
+  const userSentence = state.answerArr.map(wi => q.words[wi]).join('');
+  const correctSentence = q.answer.map(i => q.words[i]).join('');
+
+  let html = '';
+  if (isCorrect) {
+    html = `
+      <div class="feedback-correct">
+        <div class="feedback-header">
+          <div class="feedback-icon">✓</div>
+          <div class="feedback-header-text">
+            <strong>正确！Correct!</strong>
+            <span>Answered in ${timeTaken}s · Keep going!</span>
+          </div>
+        </div>
+        <div class="feedback-body">
+          <div class="correct-sentence">✦ ${correctSentence}</div>
+          <div class="explanation-block">
+            <div class="explanation-label">Why this structure works</div>
+            <div class="explanation-text">${q.explanation}</div>
+          </div>
+          <div class="grammar-pattern">${q.pattern}</div>
+          <div class="mnemonic-block">💡 <strong>Memory Tip:</strong> ${q.mnemonic}</div>
+        </div>
+      </div>`;
+  } else {
+    html = `
+      <div class="feedback-wrong">
+        <div class="feedback-header">
+          <div class="feedback-icon">✗</div>
+          <div class="feedback-header-text">
+            <strong>不正确 · Incorrect</strong>
+            <span>Review carefully — you'll get it next time!</span>
+          </div>
+        </div>
+        <div class="feedback-body">
+          <div class="explanation-block">
+            <div class="explanation-label">✓ Correct Answer</div>
+            <div class="correct-sentence">${correctSentence}</div>
+          </div>
+          <div class="explanation-block">
+            <div class="explanation-label">✗ Your Answer</div>
+            <div class="user-sentence">${userSentence}</div>
+          </div>
+          <div class="explanation-block">
+            <div class="explanation-label">Grammar Breakdown</div>
+            <div class="explanation-text">${q.explanation}</div>
+          </div>
+          <div class="grammar-pattern">${q.pattern}</div>
+          <div class="pitfall-block">⚠️ <strong>Common Pitfall:</strong> ${q.pitfall}</div>
+          <div class="mnemonic-block">💡 <strong>Memory Trick:</strong> ${q.mnemonic}</div>
+        </div>
+      </div>`;
+  }
+
+  fp.innerHTML = html;
+  fp.className = 'feedback-panel visible';
+  fp.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function skipQuestion() {
+  if (state.submitted) return;
+  state.answers[state.currentIndex] = { status: 'skipped', userAnswer: [], timeTaken: 0 };
+  saveProgress();
+  updateNavGrid();
+  nextQuestion();
+}
+
+function nextQuestion() {
+  if (state.currentIndex < QUESTIONS.length - 1) {
+    loadQuestion(state.currentIndex + 1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    showResults();
+  }
+}
+
+// ============================================================
+// NAV GRID
+// ============================================================
+function buildNavGrid() {
+  const grid = document.getElementById('navGrid');
+  grid.innerHTML = '';
+  QUESTIONS.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'nav-dot';
+    dot.textContent = i + 1;
+    dot.id = `navdot-${i}`;
+    dot.addEventListener('click', () => loadQuestion(i));
+    grid.appendChild(dot);
+  });
+  updateNavGrid();
+}
+
+function updateNavGrid() {
+  QUESTIONS.forEach((_, i) => {
+    const dot = document.getElementById(`navdot-${i}`);
+    if (!dot) return;
+    dot.className = 'nav-dot';
+    const ans = state.answers[i];
+    if (i === state.currentIndex) dot.classList.add('current');
+    else if (ans) {
+      if (ans.status === 'correct') dot.classList.add('correct');
+      else if (ans.status === 'wrong') dot.classList.add('wrong');
+      else if (ans.status === 'skipped') dot.classList.add('skipped');
+    }
+  });
+}
+
+function updateHeaderStats() {
+  const correct = state.answers.filter(a => a && a.status === 'correct').length;
+  const wrong = state.answers.filter(a => a && a.status === 'wrong').length;
+  document.getElementById('headerCorrect').textContent = correct;
+  document.getElementById('headerWrong').textContent = wrong;
+}
+
+function updateProgressBar() {
+  const done = state.answers.filter(a => a && a.status !== 'skipped').length;
+  document.getElementById('headerProgress').textContent = `${done} / ${QUESTIONS.length}`;
+  document.getElementById('headerProgressBar').style.width = (done / QUESTIONS.length * 100) + '%';
+}
+
+// ============================================================
+// RESULTS SCREEN
+// ============================================================
+function showResults() {
+  stopTimer();
+  showScreen('screen-results');
+  document.getElementById('headerCenter').style.display = 'none';
+
+  const correct = state.answers.filter(a => a && a.status === 'correct').length;
+  const wrong = state.answers.filter(a => a && a.status === 'wrong').length;
+  const skipped = state.answers.filter(a => a && a.status === 'skipped').length;
+  const total = QUESTIONS.length;
+  const pct = Math.round((correct / total) * 100);
+
+  // Grade
+  let grade, label;
+  if (pct >= 90) { grade = pct + '%'; label = 'Outstanding · 优秀'; }
+  else if (pct >= 80) { grade = pct + '%'; label = 'Very Good · 良好'; }
+  else if (pct >= 70) { grade = pct + '%'; label = 'Good · 较好'; }
+  else if (pct >= 60) { grade = pct + '%'; label = 'Pass · 及格'; }
+  else { grade = pct + '%'; label = 'Needs Practice · 需要练习'; }
+
+  document.getElementById('resultScore').textContent = grade;
+  document.getElementById('resultLabel').textContent = label;
+  document.getElementById('rCorrect').textContent = correct;
+  document.getElementById('rWrong').textContent = wrong;
+  document.getElementById('rSkipped').textContent = skipped;
+
+  const m = Math.floor(state.elapsedSeconds / 60);
+  const s = state.elapsedSeconds % 60;
+  document.getElementById('rTime').textContent = `${m}m${s}s`;
+
+  // Grammar breakdown
+  const grammarMap = {};
+  QUESTIONS.forEach((q, i) => {
+    if (!grammarMap[q.grammar]) grammarMap[q.grammar] = { correct: 0, total: 0 };
+    grammarMap[q.grammar].total++;
+    const ans = state.answers[i];
+    if (ans && ans.status === 'correct') grammarMap[q.grammar].correct++;
+  });
+
+  const breakdownEl = document.getElementById('grammarBreakdownList');
+  breakdownEl.innerHTML = '';
+  Object.entries(grammarMap).sort((a, b) => (a[1].correct/a[1].total) - (b[1].correct/b[1].total)).forEach(([gram, data]) => {
+    const pctG = Math.round(data.correct / data.total * 100);
+    const cls = pctG >= 75 ? 'good' : pctG >= 50 ? 'ok' : 'bad';
+    breakdownEl.innerHTML += `
+      <div class="grammar-breakdown-item">
+        <span class="gb-tag">${gram}</span>
+        <div class="gb-bar-wrap"><div class="gb-bar ${cls}" style="width:${pctG}%"></div></div>
+        <span class="gb-score">${data.correct}/${data.total}</span>
+      </div>`;
+  });
+
+  // Recommendations
+  const weakAreas = Object.entries(grammarMap)
+    .filter(([_, d]) => d.correct / d.total < 0.7)
+    .map(([g]) => g);
+
+  const recEl = document.getElementById('recommendationsList');
+  recEl.innerHTML = '';
+  if (weakAreas.length === 0) {
+    recEl.innerHTML = '<div class="rec-item">Excellent performance! Review skipped questions and try the drill again to aim for 100%.</div>';
+  } else {
+    weakAreas.slice(0, 4).forEach(area => {
+      const tips = {
+        '把字句': 'Practice 把 sentences by focusing on what happens TO the object. Always ensure a result/complement follows the verb.',
+        '被字句': 'For 被 sentences, remember the patient (receiver) is the subject. The verb always needs a result complement.',
+        '比较句': 'With 比 comparisons, never add 更/很 before the adjective. Add 多了 or 得多 for "much more".',
+        '结果补语': 'Learn verb-result pairs: 写错, 听懂, 找到, 做完, 说清楚. Each pair is a fixed collocation.',
+        '趋向补语': 'Memorize the 6 directions: 来/去, 上/下, 进/出, 回, 起, 过. The place word is sandwiched in complex forms.',
+        '虽然…但是': '虽然 and 但是 always pair together in Chinese. Add 还是 for "even so" nuance.',
+        '不仅…而且': 'Distinguish: 不仅…还 (same subject, addition) vs 不仅…而且 (different emphasis).',
+        '如果…就': 'Remember 就 must start the result clause, right before the subject or verb.',
+        '因为…所以': 'Chinese requires BOTH conjunctions. Don\'t omit either one.',
+        '连…都/也': '连 introduces the extreme/surprising element. 都 or 也 must follow immediately after.',
+        '是…的': 'Use 是…的 only for past events when emphasizing time, place, or manner of the action.',
+        '连动句': 'Chain verbs in logical time order. The first verb often shows means, the second shows purpose.',
+        '兼语句': 'Identify the pivot word — it is both object of V₁ and subject of V₂. Common with 让/叫/请.',
+        '无论…都': 'No matter + what/who/how → 无论/不管 + 都/也. Never omit 都/也 in the result.',
+        '宁可…也不': 'Rather do A than B: 宁可 + preferred (lesser evil) + 也不 + rejected option.',
+        '尽管…仍然': 'Formal concession: despite + adversity → still + persisted. More literary than 虽然.',
+        '不但…反而': 'Not only not (negative expectation) but instead (reversal). The key is the reversal, not addition.',
+      };
+      recEl.innerHTML += `<div class="rec-item">${area}: ${tips[area] || 'Practice more questions involving this structure.'}</div>`;
+    });
+    recEl.innerHTML += '<div class="rec-item">Retake the drill focusing on your weak grammar points — try the "Review Mode" to study all sentences first.</div>';
+  }
+
+  if (pct >= 85) launchConfetti(80);
+}
+
+function restartExam() {
+  state.answers = [];
+  state.elapsedSeconds = 0;
+  state.currentIndex = 0;
+  saveProgress();
+  startExam(0);
+}
+
+// ============================================================
+// REVIEW MODE
+// ============================================================
+function buildReviewList() {
+  const list = document.getElementById('reviewList');
+  list.innerHTML = '';
+  QUESTIONS.forEach((q, i) => {
+    const ans = state.answers[i];
+    let statusClass = 'unanswered';
+    if (ans && ans.status === 'correct') statusClass = 'answered-correct';
+    else if (ans && ans.status === 'wrong') statusClass = 'answered-wrong';
+
+    const correctSentence = q.answer.map(idx => q.words[idx]).join('');
+    const item = document.createElement('div');
+    item.className = `review-item ${statusClass}`;
+
+    const statusIcon = statusClass === 'answered-correct' ? '✓' : statusClass === 'answered-wrong' ? '✗' : '○';
+    const diffBadge = `<span class="difficulty-badge diff-${q.difficulty}" style="font-size:0.65rem;padding:2px 8px">${q.difficulty}</span>`;
+
+    item.innerHTML = `
+      <div class="review-item-header" onclick="this.parentElement.classList.toggle('expanded')">
+        <span style="font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--ink-muted);min-width:24px">${i+1}</span>
+        <span style="font-size:1.1rem;${statusClass==='answered-correct'?'color:var(--green)':statusClass==='answered-wrong'?'color:var(--red)':'color:var(--ink-muted)'}">${statusIcon}</span>
+        <span class="review-sentence">${correctSentence}</span>
+        <span class="grammar-focus" style="font-size:0.68rem;">${q.grammar}</span>
+        ${diffBadge}
+      </div>
+      <div class="review-item-body">
+        <div class="word-bank-label" style="margin-bottom:8px">Word Bank</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem">
+          ${q.words.map((w,wi) => `<span style="background:var(--surface-card);border:1.5px solid var(--border-strong);border-radius:6px;padding:6px 12px;font-family:'Noto Serif SC',serif;font-size:0.95rem">${w}</span>`).join('')}
+        </div>
+        <div class="explanation-label">Grammar Structure</div>
+        <div class="grammar-pattern" style="margin-bottom:0.75rem">${q.pattern}</div>
+        <div class="explanation-label">Explanation</div>
+        <div class="explanation-text" style="margin-bottom:0.75rem">${q.explanation}</div>
+        <div class="pitfall-block">⚠️ ${q.pitfall}</div>
+        <div class="mnemonic-block" style="margin-top:0.5rem">💡 ${q.mnemonic}</div>
+        <div style="margin-top:1rem;text-align:right">
+          <button class="btn-secondary" style="font-size:0.8rem;padding:7px 16px" onclick="startExam(${i})">Practice this question →</button>
+        </div>
+      </div>`;
+    list.appendChild(item);
+  });
+}
+
+// ============================================================
+// CONFETTI
+// ============================================================
+function launchConfetti(count = 40) {
+  const colors = ['#c8922a', '#e8b84b', '#1e7a4a', '#1d4e89', '#b83232', '#f5e6c8'];
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => {
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.cssText = `
+        left: ${Math.random() * 100}vw;
+        top: -20px;
+        background: ${colors[Math.floor(Math.random() * colors.length)]};
+        width: ${4 + Math.random() * 8}px;
+        height: ${4 + Math.random() * 8}px;
+        border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+        animation-duration: ${1.5 + Math.random() * 2}s;
+        animation-delay: 0s;
+      `;
+      document.body.appendChild(piece);
+      setTimeout(() => piece.remove(), 4000);
+    }, i * 30);
+  }
+}
+
+// ============================================================
+// INIT
+// ============================================================
+window.addEventListener('load', () => {
+  loadProgress();
+  showWelcome();
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && document.getElementById('screen-exam').classList.contains('active')) {
+      if (!state.submitted) {
+        submitAnswer();
+      } else {
+        nextQuestion();
+      }
+    }
+    if (e.key === 'Escape' && document.getElementById('screen-exam').classList.contains('active')) {
+      clearAnswer();
+    }
+  });
+});
+</script>
+</body>
+</html>
